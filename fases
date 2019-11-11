@@ -1,2 +1,268 @@
-añslkdfjlsjdf
-# una forma de decir eso
+Contactos = []
+ListaFavoritos = []
+opcion = 0
+
+def menu():
+    print(" ")
+    print("MENÚ:")
+    print("1 - Agregar contacto ")
+    print("2 - Eliminar contacto")
+    print("3 - Mostrar contactos")
+    print("4 - Contactar")
+    print("5 - Favoritos")
+    print("6 - Leer Documento")
+    print(" ")
+
+def menucontacto():
+    print(" ")
+    print("MENÚ:")
+    print("1 - Enviar mensaje ")
+    print("2 - Llamar")
+    print(" ")
+
+def menufavoritos():
+    print(" ")
+    print("MENÚ:")
+    print("1 - Ver favoritos ")
+    print("2 - Agregar a favoritos ")
+    print("3 - Eliminar de favoritos ")
+    print(" ")
+
+def asci(orden):
+    try:
+        return(ord((orden['Apellido'])[0]))
+    except:
+        return(ord((orden['Nombre'])[0]))
+        
+
+def sortnombre(ordenado):
+    try:
+        return ordenado['Nombre']
+    except:
+        return ordenado['Apellido']
+
+try:
+    InitialContacts = open("InitialContacts.txt","r")
+    for i in InitialContacts:
+        key = i.split(",")
+        ContactoNuevo = {
+                'ID':key[0],
+                'Nombre':key[1],
+                'Apellido': key[2],
+                'Telefono':key[3],
+            }
+        Contactos.append(ContactoNuevo)
+    print("Contactos Listos")
+    InitialContacts.close()  
+except:
+    print("No existe el archivo,")
+finally:
+    InitialContacts = open("InitialContacts.txt","a")
+    InitialContacts.close()
+
+try:
+    ContactosFavoritos = open("Favoritos.txt","r")
+    for i in ContactosFavoritos:
+        key = i.split(",")
+        ContactoNuevoFav = {
+                'ID':key[0],
+                'Nombre':key[1],
+                'Apellido': key[2],
+                'Telefono':key[3],
+            }
+        ListaFavoritos.append(ContactoNuevoFav)
+    print(" ")
+    ContactosFavoritos.close()  
+except:
+    print("se procederá a crearlo. ")
+finally:
+    ContactosFavoritos = open("Favoritos.txt","a")
+    ContactosFavoritos.close()
+
+while opcion < 10:
+    menu()
+    while True:
+        try:
+            opcion = int(input("Ingrese el número: "))
+            print(" ")
+            break
+        except ValueError :
+            print("Ingrese un número del menú.")
+            print(" ")
+    
+    if opcion == 1: 
+        Nombre = str(input("Nombre: "))
+        Apellido = str(input("Apellido: "))
+        print("-El número telefónico no debe estar separado por guíon o espacio.-")
+        while True:
+            try:
+                Telefono = int(input("Telefono: "))
+                break
+            except ValueError :
+                print("Ese no es un número")
+        InitialContacts = open("InitialContacts.txt","r")
+        ID = len(InitialContacts.readlines()) + 1000
+        InitialContacts.close() 
+        ContactoNuevo = {'ID':ID,
+                         'Nombre':Nombre,
+                         'Apellido':Apellido,
+                         'Telefono':Telefono}
+        Contactos.append(ContactoNuevo)
+        InitialContacts = open("InitialContacts.txt","w")
+        Contactos.sort(key = sortnombre)
+        for orden in Contactos:
+            for i in orden:
+                InitialContacts.write(str(orden[i]) + ",")
+            InitialContacts.write("\n")
+        InitialContacts.close()
+    elif opcion == 2:
+        NombreEliminar = str(input("Ingrese el nombre: "))
+        ApellidoEliminar = str(input("Ingrese el apellido: "))
+        for i in range(0,len(Contactos)):    
+            if ((Contactos[i]['Nombre'] == NombreEliminar) and (Contactos[i]['Apellido'] == ApellidoEliminar)):
+                Contactos.pop(i)
+                InitialContacts = open("InitialContacts.txt","w")
+                Contactos.sort(key = sortnombre)
+                for orden in Contactos:
+                    for i in orden:
+                        InitialContacts.write(str(orden[i]) + ",")
+                    InitialContacts.write("\n")
+                InitialContacts.close()
+                print("\nContacto Eliminado\n")
+    elif opcion == 3:
+        
+        Contactos.sort(key = sortnombre)
+        for orden in Contactos:
+            for i in orden:
+                print(i+ ":" + str(orden[i]) + ",")
+            print(" ")
+    elif opcion == 4:
+        menucontacto()
+        while True:
+            try:
+                contactar = int(input("Ingrese el número: "))
+                print(" ")
+                break
+            except ValueError :
+                print("Ingrese un número del menú.")
+                print(" ")
+        if contactar == 1:
+            while True:
+                try:
+                    cantmensaje = int(input("Ingrese la cantidad de contactos para el mensaje: "))
+                    print(" ")
+                    break
+                except ValueError :
+                    print("Debe ingresar un número entero.")
+            ContactosMensaje = [" "]*cantmensaje
+            Mensaje = str(input("Escriba el mensaje: "))         
+            for i in range(1,len(ContactosMensaje)+1):
+                IDMensaje = str(input("Ingrese el ID "+ str(i) + ": "))                
+                ContactosMensaje.append(IDMensaje)                
+
+            print("\n  Para:" )
+            for i in range(len(ContactosMensaje)):
+                IDMen = ContactosMensaje[i]
+                for i in range(0,len(Contactos)):    
+                    if (Contactos[i]['ID'] == IDMen):                        
+                        print("- " + Contactos[i]['Nombre'] + " " + Contactos[i]['Apellido'] + " (" + Contactos[i]['Telefono'] +")" )
+           
+            print("\n  Mensaje:\n" + str(Mensaje))
+            Enviar = str(input("\nPresione E para enviar: \n"))
+            if ((Enviar == "E") or (Enviar == "e")):
+                print("Mensaje Enviado")
+
+        elif contactar == 2:
+            IDLlamada = str(input("Ingrese el ID: ")) 
+            for i in range(0,len(Contactos)):    
+                if (Contactos[i]['ID'] == IDLlamada):                    
+                    CortarLlamada = " "                                    
+                    while CortarLlamada == " ":
+                        print("\nLlamando a..." )
+                        print(str(Contactos[i]['Nombre']) + " " + str(Contactos[i]['Apellido']))  
+                        print("Telefono: " + str(Contactos[i]['Telefono']))  
+                        CortarLlamada = str(input("\nPara cortar la llamada ingrese C:\n"))
+                    print("\nLlamada finalizada.")
+        print(" ")
+    elif opcion == 5:
+        menufavoritos()
+        while True:
+            try:
+                favoritos = int(input("Ingrese el número: "))
+                print(" ")
+                break
+            except ValueError :
+                print("Ingrese un número del menú.")
+                print(" ")
+        if favoritos == 1:
+            ListaFavoritos.sort(key = sortnombre)
+            for orden in ListaFavoritos:
+                for i in orden:
+                    print(i + ": " + str(orden[i]) + ",")
+                print(" ")
+        elif favoritos == 2:
+            NombreFav = str(input("Ingrese el nombre: "))
+            ApellidoFav = str(input("Ingrese el apellido: ")) 
+            for i in range(0,len(Contactos)):    
+                if ((Contactos[i]['Nombre'] == NombreFav) and (Contactos[i]['Apellido'] == ApellidoFav)):  
+                    ContactosFavoritos = open("Favoritos.txt","r")
+                    IDFav = len(ContactosFavoritos.readlines()) + 100
+                    ContactosFavoritos.close()
+                    ContactoNuevoFav = {
+                    'ID':IDFav,
+                    'Nombre':Contactos[i]['Nombre'],
+                    'Apellido': Contactos[i]['Apellido'],
+                    'Telefono':Contactos[i]['Telefono'],
+                    }
+                    ListaFavoritos.append(ContactoNuevoFav)
+                    ContactosFavoritos = open("Favoritos.txt","w")
+                    ListaFavoritos.sort(key = sortnombre)
+                    for orden in ListaFavoritos:
+                        for i in orden:
+                            ContactosFavoritos.write(str(orden[i]) + ",")
+                        ContactosFavoritos.write("\n")
+                    ContactosFavoritos.close()
+                    print("\nAgregado a Favoritos\n")  
+        elif favoritos == 3:  
+            NombreFavEliminar = str(input("Ingrese el nombre: "))
+            ApellidoFavEliminar = str(input("Ingrese el apellido: "))
+            for i in range(0,len(ListaFavoritos)):    
+                if ((ListaFavoritos[i]['Nombre'] == NombreFavEliminar) and (ListaFavoritos[i]['Apellido'] == ApellidoFavEliminar)):
+                    ListaFavoritos.pop(i)
+                    ContactosFavoritos = open("Favoritos.txt","w")
+                    ListaFavoritos.sort(key = sortnombre)
+                    for orden in ListaFavoritos:
+                        for i in orden:
+                            ContactosFavoritos.write(str(orden[i]) + ",")
+                        ContactosFavoritos.write("\n")
+                    ContactosFavoritos.close()
+                    print("\nContacto Eliminado\n")
+    elif opcion == 6:
+        print("-Para extraer los contactos deberan estar guardados de esta manera:\n ID,Nombre,Apellido,12345678,")
+        Documento = input("Escriba la ubicación del archivo:\n")
+
+        try:
+            LeerDoc = open(Documento,"r")
+            for i in LeerDoc:
+                key = i.split(",")
+                ContactoNuevo = {
+                        'ID':key[0],
+                        'Nombre':key[1],
+                        'Apellido': key[2],
+                        'Telefono':key[3],
+                    }
+                Contactos.append(ContactoNuevo)
+                InitialContacts = open("InitialContacts.txt","w")
+                Contactos.sort(key = sortnombre)
+                for orden in Contactos:
+                    for i in orden:
+                        InitialContacts.write(str(orden[i]) + ",")
+                    InitialContacts.write("\n")
+                InitialContacts.close()
+            LeerDoc.close()
+        except FileNotFoundError:
+            print("Archivo no Encontrado.")
+
+        print("Lectura Terminada")
+    elif opcion == 7:    
+                
